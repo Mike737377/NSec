@@ -18,14 +18,15 @@ namespace NSec
 
         public EventType EventType { get; set; }
 
-        public AttackerProfile AttackerProfile { get; private set; }
+        public AttackerProfile AttackerProfile { get; set; }
     }
 
     public class AttackerProfile
     {
-        public string IPAddress { get; private set; }
+        public string AnonymousUserId;
+        public string IPAddress { get; set; }
 
-        public string UserAgent { get; private set; }
+        public string UserAgent { get; set; }
 
         public int Fingerprint
         {
@@ -42,6 +43,7 @@ namespace NSec
         InsufficientSecurityPrivledges,
         DangerousHttpMethod,
         Spidering,
-        RequestForgery
+        RequestForgery,
+        UnsuccessfulLoginAttempt
     }
 }

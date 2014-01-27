@@ -12,26 +12,32 @@ namespace NSec.SecurityEvents
     public class ReportSecurityEventHandler : IHandler<ReportSecurityEvent>
     {
         private readonly IServiceBus bus;
-        private readonly IDataContext store;
+        private readonly IDataContext dataContext;
 
         public ReportSecurityEventHandler(IServiceBus bus, IDataContext dataContext)
         {
             this.bus = bus;
-            this.store = dataContext;
+            this.dataContext = dataContext;
         }
 
         public void Execute(ReportSecurityEvent message)
         {
-            store.Add(message.Event);
+            dataContext.SecurityEvents.Add(message.Event);
 
-            //check thresholds
-            //if > threshold then lockout
             var threshold = new Threshold[] { };
 
             threshold.ForEach(v =>
                 {
-                    var thresholdReached = v.Critera.Invoke(message.Event, store.SecurityEvents.Query);
-                    if (thresholdReached)
+                    var thresholdQuery = dataContext.SecurityEvents.Query.Where(sql => sql.EventType == v.Conditions.EventType);
+
+                    if (v.Conditions.Period != TimeSpan.Zero)
+                    {
+                        var afterDate = SystemTime.UtcNow.Subtract(v.Conditions.Period);
+                        thresholdQuery.Where(sql => sql.Date >= afterDate);
+                    }
+
+                    var matchedEvents = thresholdQuery.Count();
+                    if (matchedEvents >= v.Conditions.MinimumSecurityEvents)
                     {
                         v.Reactions.ForEach(x => bus.Send(new ThresholdReached() { SecurityEvent = message.Event, Reaction = x }));
                     }

@@ -7,8 +7,6 @@ namespace NSec.Config
 {
     public class Threshold
     {
-        public delegate bool CriteraSearch(SecurityEvent currentSecurityEvent, IQueryable<SecurityEvent> allSecurityEvents);
-
         public Threshold()
         {
             Reactions = new List<ThresholdReaction>();
@@ -16,17 +14,68 @@ namespace NSec.Config
 
         public string Name { get; set; }
 
-        public CriteraSearch Critera { get; set; }
+        public ThresholdConditions Conditions { get; set; }
 
         public List<ThresholdReaction> Reactions { get; private set; }
     }
 
-    public enum ThresholdReaction : int
+    public class ThresholdConditions
     {
-        BlockByIPAddress,
-        BlockUserAgent,
-        TrackSession,
-        ThrottleIPAddress,
-        ThrottleUserAgent
+        /// <summary>
+        /// Gets or sets the period for the conditions to be matched over. Set to TimeSpan.Zero for all time matching.
+        /// </summary>
+        /// <value>
+        /// The period.
+        /// </value>
+        public TimeSpan Period { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum number of security events that have occurred within the period before the threshold is enacted upon.
+        /// </summary>
+        /// <value>
+        /// The minimum security events.
+        /// </value>
+        public int MinimumSecurityEvents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the event to match.
+        /// </summary>
+        /// <value>
+        /// The type of the event.
+        /// </value>
+        public EventType EventType { get; set; }
+    }
+
+    public class ThresholdReaction
+    {
+        public ThresholdReaction()
+        { }
+
+        public ThresholdReaction(Action action, AttackerComparison comparison)
+        {
+            Action = action;
+            Comparison = comparison;
+        }
+
+        public Action Action { get; set; }
+
+        public AttackerComparison Comparison { get; set; }
+    }
+
+    public enum AttackerComparison : int
+    {
+        IPAddress,
+        UserAgent,
+        Fingerprint,
+        AnonymousId,
+        UserId,
+        SessionId,
+    }
+
+    public enum Action
+    {
+        Block,
+        Track,
+        Throttle
     }
 }

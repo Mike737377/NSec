@@ -16,12 +16,14 @@ namespace NSec.Infrastructure
         }
 
         public void Send<TMessage>(TMessage message)
+            where TMessage : IMessage
         {
             var handler = handlerRegistry.GetHandlerForMessage<TMessage>();
             handler.Execute(message);
         }
 
         public void Reply<TMessage>(TMessage message)
+            where TMessage : IMessage
         {
             throw new NotImplementedException();
         }

@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Config\NSecConfiguration.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Infrastructure\IMessage.cs" />
     <Compile Include="Infrastructure\ServiceFactory.cs" />
     <Compile Include="Config\Threshold.cs" />
     <Compile Include="Infrastructure\HandlerRegistry.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="SecurityEvents\ReportSecurityEventHandler.cs" />
     <Compile Include="SecurityEvents\ThresholdReached.cs" />
     <Compile Include="SecurityEvents\ThresholdReachedHandler.cs" />
+    <Compile Include="SystemTime.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

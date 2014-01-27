@@ -14,9 +14,12 @@ namespace NSec.Repositories
             storage.Add(data);
         }
 
-        public IQueryable<T> Query()
+        public IQueryable<T> Query
         {
-            return storage.AsQueryable();
+            get
+            {
+                return storage.AsQueryable();
+            }
         }
 
         public void Remove(T data)

@@ -5,9 +5,7 @@ using System.Text;
 
 namespace NSec.Infrastructure
 {
-    public interface IHandler<TMessage>
-        where TMessage : IMessage
+    public interface IMessage
     {
-        void Execute(TMessage message);
     }
 }

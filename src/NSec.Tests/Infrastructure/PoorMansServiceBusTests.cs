@@ -13,7 +13,7 @@ namespace NSec.Tests.Infrastructure
 {
     public class PoorMansServiceBusTests
     {
-        public class TestMessage { }
+        public class TestMessage : IMessage { }
 
         public class TestMessageHandler : IHandler<TestMessage>
         {

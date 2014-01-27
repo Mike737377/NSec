@@ -7,7 +7,8 @@ namespace NSec.Infrastructure
 {
     public interface IServiceBus
     {
-        void Send<TMessage>(TMessage message);
-        void Reply<TMessage>(TMessage message);
+        void Send<TMessage>(TMessage message) where TMessage : IMessage;
+
+        void Reply<TMessage>(TMessage message) where TMessage : IMessage;
     }
 }

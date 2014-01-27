@@ -7,6 +7,6 @@ namespace NSec.Infrastructure
 {
     public interface IHandlerRegistry
     {
-        IHandler<TMessage> GetHandlerForMessage<TMessage>();
+        IHandler<TMessage> GetHandlerForMessage<TMessage>() where TMessage : IMessage;
     }
 }
