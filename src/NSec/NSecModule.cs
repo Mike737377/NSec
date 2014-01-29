@@ -1,4 +1,9 @@
-﻿using System;
+﻿using NSec.Infrastructure;
+using NSec.Lockouts;
+using NSec.Repositories;
+using System;
+using System.Linq;
+using System.Net;
 using System.Web;
 
 namespace NSec
@@ -27,7 +32,41 @@ namespace NSec
 
         public void OnBeginRequest(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            OnBeginRequest(ServiceFactory.GetInstance<HttpContextBase>(), ServiceFactory.GetInstance<IDataContext>(), ServiceFactory.GetInstance<IServiceBus>());
+        }
+
+        public void OnBeginRequest(HttpContextBase httpContext, IDataContext dataContext, IServiceBus bus)
+        {
+            var lockoutsQuery = dataContext.Lockouts.Query.Where(v => v.EndDate >= SystemTime.UtcNow);
+
+            var anonymousLockouts = httpContext.Request.AnonymousID != null ? lockoutsQuery.Where(v => v.Type == Config.AttackerComparison.AnonymousId && v.AttackerDetail.Equals(httpContext.Request.AnonymousID)).ToArray() : new Lockout[] { };
+            var ipLockouts = lockoutsQuery.Where(v => v.Type == Config.AttackerComparison.IPAddress && v.AttackerDetail.Equals(httpContext.Request.UserHostAddress)).ToArray();
+            var sessionLockouts = lockoutsQuery.Where(v => v.Type == Config.AttackerComparison.SessionId && v.AttackerDetail.Equals(httpContext.Session.SessionID)).ToArray();
+            var fingerprintLockouts = lockoutsQuery.Where(v => v.Type == Config.AttackerComparison.Fingerprint && v.AttackerDetail.Equals(httpContext.Request.GetFingerprint())).ToArray();
+            var userAgentLockouts = lockoutsQuery.Where(v => v.Type == Config.AttackerComparison.UserAgent && v.AttackerDetail.Equals(httpContext.Request.UserAgent)).ToArray();
+
+            var lockouts = anonymousLockouts.Union(ipLockouts).Union(sessionLockouts).Union(sessionLockouts).Union(fingerprintLockouts).Union(userAgentLockouts).ToArray();
+
+            if (lockouts.Count() > 0)
+            {
+                httpContext.Response.SuppressContent = true;
+                httpContext.Response.ClearHeaders();
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Gone;
+                httpContext.Response.End();
+
+                var throttles = lockouts.Where(v => v.Action == Config.SecurityAction.Throttle).ToArray();
+
+                throttles.ForEach(v =>
+                    {
+                        bus.Send(new LockoutAttacker()
+                        {
+                            Action = v.Action,
+                            AttackerDetail = v.AttackerDetail,
+                            MinimumPeriod = v.Period,
+                            Type = v.Type
+                        });
+                    });
+            }
         }
     }
 }

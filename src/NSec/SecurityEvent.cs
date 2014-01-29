@@ -10,6 +10,7 @@ namespace NSec
         public SecurityEvent()
         {
             AttackerProfile = new AttackerProfile();
+            SecurityEventId = Guid.NewGuid();
         }
 
         public Guid SecurityEventId { get; private set; }

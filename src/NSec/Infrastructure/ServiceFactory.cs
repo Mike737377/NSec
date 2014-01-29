@@ -23,12 +23,16 @@ namespace NSec.Infrastructure
                 {
                     x.Scan(scanner =>
                     {
-                        scanner.TheCallingAssembly();
-                        scanner.AddAllTypesOf(typeof(IHandler<>));
-                        scanner.ConnectImplementationsToTypesClosing(typeof(IHandler<>));
+                        //scanner.TheCallingAssembly();
+                        scanner.AssemblyContainingType(typeof(ServiceFactory));
+                        //scanner.AddAllTypesOf(typeof(IHandler<>));
+
                         scanner.WithDefaultConventions();
-                        scanner.RegisterConcreteTypesAgainstTheFirstInterface();
+                        scanner.ConnectImplementationsToTypesClosing(typeof(IHandler<>));
+                        scanner.ConnectImplementationsToTypesClosing(typeof(IRepository<>));
+                        //scanner.RegisterConcreteTypesAgainstTheFirstInterface();
                     });
+                    x.For(typeof(IRepository<>)).Singleton().Use(typeof(PoorMansRepository<>));
                     x.For(typeof(IDataContext)).HybridHttpOrThreadLocalScoped();
                     x.For<IServiceBus>().Singleton().Use<PoorMansServiceBus>();
                     x.For<HttpContextBase>().HttpContextScoped().Use(() => new HttpContextWrapper(HttpContext.Current));

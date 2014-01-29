@@ -51,15 +51,16 @@ namespace NSec.Config
         public ThresholdReaction()
         { }
 
-        public ThresholdReaction(Action action, AttackerComparison comparison)
+        public ThresholdReaction(SecurityAction action, AttackerComparison comparison, TimeSpan period)
         {
             Action = action;
             Comparison = comparison;
+            Period = period;
         }
 
-        public Action Action { get; set; }
-
+        public SecurityAction Action { get; set; }
         public AttackerComparison Comparison { get; set; }
+        public TimeSpan Period { get; set; }
     }
 
     public enum AttackerComparison : int
@@ -72,7 +73,7 @@ namespace NSec.Config
         SessionId,
     }
 
-    public enum Action
+    public enum SecurityAction
     {
         Block,
         Track,

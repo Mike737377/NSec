@@ -17,7 +17,7 @@ namespace NSec.ExampleSite.NSecThresholds
                 Period = TimeSpan.Zero
             };
 
-            this.Reactions.Add(new ThresholdReaction(Config.Action.Throttle, AttackerComparison.AnonymousId));
+            this.Reactions.Add(new ThresholdReaction(Config.SecurityAction.Throttle, AttackerComparison.IPAddress, new TimeSpan(0, 15, 0)));
         }
     }
 }

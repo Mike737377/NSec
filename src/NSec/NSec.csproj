@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\NSecConfiguration.cs" />
+    <Compile Include="Extensions\HttpRequestExtensions.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Infrastructure\IMessage.cs" />
     <Compile Include="Infrastructure\ServiceFactory.cs" />

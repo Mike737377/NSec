@@ -24,7 +24,7 @@ namespace NSec.SecurityEvents
         {
             dataContext.SecurityEvents.Add(message.Event);
 
-            var threshold = new Threshold[] { };
+            var threshold = NSecConfiguration.ThresholdList.ToArray();
 
             threshold.ForEach(v =>
                 {

@@ -1,4 +1,5 @@
-﻿using NSec.Infrastructure;
+﻿using NSec.Config;
+using NSec.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,9 @@ namespace NSec.Lockouts
 {
     public class LockoutAttacker : IMessage
     {
-        public Guid AttackerGuid { get; set; }
+        public string AttackerDetail { get; set; }
+        public AttackerComparison Type { get; set; }
+        public TimeSpan MinimumPeriod { get; set; }
+        public SecurityAction Action { get; set; }
     }
 }
