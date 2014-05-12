@@ -26,6 +26,7 @@ namespace NSec.ExampleSite
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             NSecConfiguration.AddThreshold(new UnsuccessfulLoginAttempt());
+            NSecConfiguration.ExcludeUrl("/clear$");
             NSecConfiguration.SetUserIdCallback(x => x.User.Identity.Name);
         }
     }
