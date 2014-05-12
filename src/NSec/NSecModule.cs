@@ -1,10 +1,14 @@
-﻿using NSec.Infrastructure;
+﻿using NSec.Config;
+using NSec.Infrastructure;
 using NSec.Lockouts;
+using NSec.Model;
 using NSec.Repositories;
 using System;
 using System.Linq;
 using System.Net;
 using System.Web;
+using FubuCore;
+using System.Text.RegularExpressions;
 
 namespace NSec
 {
@@ -37,6 +41,14 @@ namespace NSec
 
         public void OnBeginRequest(HttpContextBase httpContext, IDataContext dataContext, IServiceBus bus)
         {
+            var currentUrl = httpContext.Request.Url.ToString();
+
+            if (NSecConfiguration.ExcludedUrlPatterns.Any(v => Regex.IsMatch(currentUrl, v)))
+            {
+                //do not filter request
+                return;
+            }
+
             var lockoutsQuery = dataContext.Lockouts.Query.Where(v => v.EndDate >= SystemTime.UtcNow);
 
             var anonymousLockouts = httpContext.Request.AnonymousID != null ? lockoutsQuery.Where(v => v.Type == Config.AttackerComparison.AnonymousId && v.AttackerDetail.Equals(httpContext.Request.AnonymousID)).ToArray() : new Lockout[] { };
@@ -51,10 +63,10 @@ namespace NSec
             {
                 httpContext.Response.SuppressContent = true;
                 httpContext.Response.ClearHeaders();
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Gone;
+                httpContext.Response.StatusCode = (int)NSecConfiguration.LockoutStatusCode;
                 httpContext.Response.End();
 
-                var throttles = lockouts.Where(v => v.Action == Config.SecurityAction.Throttle).ToArray();
+                var throttles = lockouts.Where(v => v.Action == Config.SecurityAction.Throttle).ToList();
 
                 throttles.ForEach(v =>
                     {

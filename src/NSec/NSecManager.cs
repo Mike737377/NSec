@@ -1,4 +1,6 @@
 ﻿using NSec.Infrastructure;
+using NSec.Lockouts;
+using NSec.Model;
 using NSec.SecurityEvents;
 using System;
 using System.Collections.Generic;
@@ -20,43 +22,25 @@ namespace NSec
             bus = ServiceFactory.GetInstance<IServiceBus>();
         }
 
+        private static ISecurityReporter GetReporter()
+        {
+            return ServiceFactory.GetInstance<ISecurityReporter>();
+        }
+
         public static void ReportSecurityEvent(EventType eventType)
         {
-            ServiceFactory.GetInstance<ISecurityReporter>().Report(eventType);
+            GetReporter().Report(eventType);
         }
 
-        public interface ISecurityReporter
+        public static void UnlockCurrentProfile()
         {
-            void Report(EventType eventType);
+            GetReporter().UnlockCurrentProfile();
         }
 
-        public class SecurityReporter : ISecurityReporter
+        public static void UnlockProfile(UnlockProfile profile)
         {
-            private readonly HttpContextBase httpContext;
-            private readonly IServiceBus bus;
-
-            public SecurityReporter(IServiceBus bus, HttpContextBase httpContext)
-            {
-                this.bus = bus;
-                this.httpContext = httpContext;
-            }
-
-            public void Report(EventType eventType)
-            {
-                var securityEvent = new SecurityEvent()
-                {
-                    Date = DateTime.UtcNow,
-                    AttackerProfile = new AttackerProfile()
-                    {
-                        IPAddress = httpContext.Request.UserHostAddress,
-                        UserAgent = httpContext.Request.UserAgent,
-                        AnonymousUserId = httpContext.Request.AnonymousID,
-                    },
-                    EventType = eventType,
-                };
-
-                bus.Send(new ReportSecurityEvent() { Event = securityEvent });
-            }
+            GetReporter().UnlockProfile(profile);
         }
+
     }
 }

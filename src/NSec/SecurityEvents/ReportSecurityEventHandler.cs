@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FubuCore;
 
 namespace NSec.SecurityEvents
 {
@@ -24,7 +25,7 @@ namespace NSec.SecurityEvents
         {
             dataContext.SecurityEvents.Add(message.Event);
 
-            var threshold = NSecConfiguration.ThresholdList.ToArray();
+            var threshold = NSecConfiguration.ThresholdList.ToList();
 
             threshold.ForEach(v =>
                 {

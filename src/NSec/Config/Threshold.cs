@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NSec.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,6 +72,7 @@ namespace NSec.Config
         AnonymousId,
         UserId,
         SessionId,
+        UserName,
     }
 
     public enum SecurityAction

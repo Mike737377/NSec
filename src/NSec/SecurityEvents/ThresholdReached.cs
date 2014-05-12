@@ -1,5 +1,6 @@
 ﻿using NSec.Config;
 using NSec.Infrastructure;
+using NSec.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

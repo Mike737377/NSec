@@ -1,4 +1,5 @@
 ﻿using NSec.Infrastructure;
+using NSec.Model;
 using NSec.Repositories;
 using System;
 using System.Collections.Generic;
